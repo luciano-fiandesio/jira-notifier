@@ -7,17 +7,22 @@ and the Jira issue's status is not equal to 'Done'
 
 import time
 import json
+import argparse
 from jira import JIRA
 
 SERVER = "https://jira.dhis2.org"
 PROJECT = "DHIS2"
 jira_options = {"server": SERVER}
-jira = JIRA(options=jira_options, basic_auth=(
-    "username", "password"))
-sess_get = jira._session.get
+sess_get = None
 
+def init_jira(args):
+    global sess_get
+    jira = JIRA(options=jira_options, basic_auth=(args.username, args.password))
+    sess_get = jira._session.get
+    return jira
 
 def get_dev_status(issue_id):
+
     """ get the pull request data for the issue id """
     dev_status = SERVER + "/rest/dev-status/1.0"
     _issue = 'issue/summary?issueId=%s' % issue_id
@@ -32,6 +37,13 @@ def notify():
     print("notify!")
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(description='Notify Jira users of issues with incorrect status')
+    parser.add_argument('-s', '--server', help='Jira server URL', default=SERVER)
+    parser.add_argument('-u', '--username', help='Username', required=True)
+    parser.add_argument('-p', '--password', help='Password', required=True)
+
+    jira = init_jira(parser.parse_args())
 
     # get issues for project
     issues_in_proj = jira.search_issues('project=' + PROJECT)
