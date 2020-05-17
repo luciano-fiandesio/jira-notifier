@@ -3,6 +3,15 @@
 Notify a developer via Slack if he/she has a Jira issue with a merged Pull Request
 and the Jira issue's status is not equal to 'Done'
 
+Args:
+    -s Jira server URL
+    -u Jira server username
+    -p Jira server password
+
+Example:
+
+    $ python jira_notify.py -s https://my.jira.com -u username -p password
+
 """
 
 import time
